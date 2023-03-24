@@ -12,7 +12,7 @@ function delete($tableName, $where, $successMsg = 'Data deleted successfully.') 
 }
 
 
-//usage
+//usage 
 
 echo delete('users', 'id = 1');
 
