@@ -1,5 +1,6 @@
 <?php
 function insert($tableName, $data, $rules = [], $successMsg = 'Data inserted successfully.') {
+function insert($tableName, $data, $rules = [], $successMsg = 'Data inserted successfully.') {
     global $connect;
 
     $columns = implode(", ", array_keys($data));
@@ -14,22 +15,18 @@ function insert($tableName, $data, $rules = [], $successMsg = 'Data inserted suc
     // Check validation rules for specific fields
     foreach ($rules as $field => $fieldRules) {
         foreach ($fieldRules as $rule => $param) {
-            switch ($rule) {
-                case 'required':
-                    if ($param && empty($data[$field])) {
-                        return "Error: $field is required.";
-                    }
-                    break;
-                case 'min':
-                    if (strlen($data[$field]) < $param) {
-                        return "Error: $field must be at least $param characters long.";
-                    }
-                    break;
-                case 'max':
-                    if (strlen($data[$field]) > $param) {
-                        return "Error: $field cannot be more than $param characters long.";
-                    }
-                    break;
+            if ($rule === 'required') {
+                if ($param && empty($data[$field])) {
+                    return "Error: $field is required.";
+                }
+            } else if ($rule === 'min') {
+                if (strlen($data[$field]) < $param) {
+                    return "Error: $field must be at least $param characters long.";
+                }
+            } else if ($rule === 'max') {
+                if (strlen($data[$field]) > $param) {
+                    return "Error: $field cannot be more than $param characters long.";
+                }
             }
         }
     }

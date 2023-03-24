@@ -19,11 +19,9 @@ function update($tableName, $data, $where, $rules = array(), $successMsg = 'Data
             $value = $data[$key];
             if (!empty($rule['required']) && empty($value)) {
                 $errorMessages[$key] = ucfirst($key) . ' field is required.';
-            }
-            if (!empty($rule['min']) && strlen($value) < $rule['min']) {
+            } else if (!empty($rule['min']) && strlen($value) < $rule['min']) {
                 $errorMessages[$key] = ucfirst($key) . ' field must contain at least ' . $rule['min'] . ' characters.';
-            }
-            if (!empty($rule['max']) && strlen($value) > $rule['max']) {
+            } else if (!empty($rule['max']) && strlen($value) > $rule['max']) {
                 $errorMessages[$key] = ucfirst($key) . ' field cannot exceed ' . $rule['max'] . ' characters.';
             }
         }
@@ -39,7 +37,6 @@ function update($tableName, $data, $where, $rules = array(), $successMsg = 'Data
         return "Error: " . $e->getMessage();
     }
 }
-
 
 //usage
 
