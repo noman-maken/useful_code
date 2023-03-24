@@ -12,22 +12,24 @@ function update($tableName, $data, $where, $rules = array(), $successMsg = 'Data
     $stmt = $connect->prepare($sql);
     foreach ($data as $key => $value) {
         $stmt->bindValue(":$key", $value);
-        if(empty($value)){
-            return "Error: The field $key cannot be empty.";
-        }
     }
     if (!empty($rules)) {
+        $errorMessages = array();
         foreach ($rules as $key => $rule) {
             $value = $data[$key];
             if (!empty($rule['required']) && empty($value)) {
-                return $rule['required'];
+                $errorMessages[$key] = ucfirst($key) . ' field is required.';
             }
             if (!empty($rule['min']) && strlen($value) < $rule['min']) {
-                return $rule['min'];
+                $errorMessages[$key] = ucfirst($key) . ' field must contain at least ' . $rule['min'] . ' characters.';
             }
             if (!empty($rule['max']) && strlen($value) > $rule['max']) {
-                return $rule['max'];
+                $errorMessages[$key] = ucfirst($key) . ' field cannot exceed ' . $rule['max'] . ' characters.';
             }
+        }
+        if (!empty($errorMessages)) {
+            $errorMsg = implode(' ', $errorMessages);
+            return $errorMsg;
         }
     }
     try {
@@ -37,7 +39,6 @@ function update($tableName, $data, $where, $rules = array(), $successMsg = 'Data
         return "Error: " . $e->getMessage();
     }
 }
-
 
 
 //usage
