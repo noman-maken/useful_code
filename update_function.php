@@ -12,6 +12,9 @@ function update($tableName, $data, $where, $rules = array(), $successMsg = 'Data
     $stmt = $connect->prepare($sql);
     foreach ($data as $key => $value) {
         $stmt->bindValue(":$key", $value);
+        if(empty($value)){
+            return "Error: The field $key cannot be empty.";
+        }
     }
     if (!empty($rules)) {
         foreach ($rules as $key => $rule) {
