@@ -1,5 +1,5 @@
 <?php
-function insert($tableName, $data, , $rules = [], $successMsg = 'Data inserted successfully.') {
+function insert($tableName, $data, $rules = [], $successMsg = 'Data inserted successfully.') {
     global $connect;
 
     $columns = implode(", ", array_keys($data));
