@@ -1,6 +1,5 @@
 <?php
 function insert($tableName, $data, $rules = [], $successMsg = 'Data inserted successfully.') {
-function insert($tableName, $data, $rules = [], $successMsg = 'Data inserted successfully.') {
     global $connect;
 
     $columns = implode(", ", array_keys($data));
@@ -13,22 +12,28 @@ function insert($tableName, $data, $rules = [], $successMsg = 'Data inserted suc
     }
 
     // Check validation rules for specific fields
+    $errors = []; // initialize empty array to store errors
     foreach ($rules as $field => $fieldRules) {
         foreach ($fieldRules as $rule => $param) {
             if ($rule === 'required') {
                 if ($param && empty($data[$field])) {
-                    return "Error: $field is required.";
+                    $errors[$field] = "$field is required.";
                 }
             } else if ($rule === 'min') {
                 if (strlen($data[$field]) < $param) {
-                    return "Error: $field must be at least $param characters long.";
+                    $errors[$field] = "$field must be at least $param characters long.";
                 }
             } else if ($rule === 'max') {
                 if (strlen($data[$field]) > $param) {
-                    return "Error: $field cannot be more than $param characters long.";
+                    $errors[$field] = "$field cannot be more than $param characters long.";
                 }
             }
         }
+    }
+
+    // Check if there are errors
+    if (!empty($errors)) {
+        return $errors; // return array of errors
     }
 
     try {
@@ -40,27 +45,53 @@ function insert($tableName, $data, $rules = [], $successMsg = 'Data inserted suc
 }
 
 // Example usage:
-$data = [
-    'coupon' => 'DISCOUNT10',
-    'status' => 'Pending',
-    'coupon_discount' => 10
-];
-$rules = [
-    'coupon' => [
-        'required' => true,
-        'min' => 5
-    ],
-    'status' => [
-        'required' => true
-    ],
-    'coupon_discount' => [
-        'required' => true,
-        'min' => 1,
-        'max' => 2
-    ]
-];
+$register_user_data = array(
+                    'name' => $name,
+                    'email' => $email,
+                    'username' => $username,
+                    'password' => $user_encrypted_password,
+                    'role' => $role,
+                    'contact' => $contact,
+                    'activation_code' => $activation_code,
+                    'email_status' => 0,
+                    'user_status' => 0
+                );
 
-echo insert('coupon', $data, $rules, 'Data inserted successfully.');
+$register_user_rules = array(
+                    'name' => array('required' => true, 'min' => 3, 'max' => 20),
+                    'email' => array('required' => true, 'min' => 5, 'max' => 25),
+                    'username' => array('required' => true, 'min' => 3, 'max' => 20)
+                );
+
+$result = array();
+
+if(!empty($email)){
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $result[] = "Invalid email";
+    }
+}
+else{
+     $result[] = "Email is required";
+}
+
+
+$result = insert('user', $register_user_data, $register_user_rules, 'Successfully Register');
+
+ $alert = '';
+        $alert_message = '';
+        if (is_array($result)) {
+            foreach ($result as $error) {
+                $alert_message .= $error . '<br>';
+                $alert = 'danger';
+            }
+
+        } else {
+            $alert = 'success';
+            $alert_message = $result;
+           
+        }
+
+       $attempt_alert =  "<div class='alert alert-$alert' style='text-align:center;'>$alert_message</div>";
 
 
 ?>
